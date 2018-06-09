@@ -27,3 +27,15 @@ Running the server locally
 
     pipenv install
     pipenv run ./manage.py runserver
+
+Running in docker
+=================
+
+    docker build -t registry.condi.me/kopper .
+
+    docker run \
+      -e SECRET_KEY=$(uuidgen) \
+      -e ALLOWED_HOSTS=localhost \
+      -p 80:80
+      registry.condi.me/kopper \
+      piipenv run ./manage.py runserver 0.0.0.0:80
