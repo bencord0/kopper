@@ -6,6 +6,8 @@ from pprint import pformat
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from kopper.models import Deployment
+
 log = logging.getLogger(__name__)
 
 
@@ -51,7 +53,17 @@ def handle_push_manifest(event):
     image = event["target"]["repository"]
     tag = event["target"]["tag"]
 
+    # Normalize timestamps
+    foreign_timestamp = maya.when(event["timestamp"])
+    timestamp = foreign_timestamp.iso8601()
+
     log.info(f"New image {host}/{image}:{tag}")
+    Deployment.objects.create(
+        host=host,
+        image=image,
+        tag=tag,
+        timestamp=timestamp,
+    )
 
 
 EVENT_HANDLERS = {
