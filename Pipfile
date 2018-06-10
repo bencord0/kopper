@@ -17,6 +17,9 @@ djangorestframework = "*"
 maya = "*"
 dj-database-url = "*"
 "psycopg2" = "*"
+raven = "*"
+gunicorn = "*"
+requests = "*"
 
 
 [dev-packages]

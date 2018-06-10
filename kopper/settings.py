@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 
 import dj_database_url
+import raven
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -42,6 +43,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'kopper',
+
+    'raven.contrib.django',
 ]
 
 MIDDLEWARE = [
@@ -129,12 +132,36 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
         },
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+        },
     },
     'loggers': {
+        'root': {
+            'level': 'INFO',
+            'handlers': ['console', 'sentry'],
+        },
         'kopper': {
-            'handlers': ['console'],
+            'handlers': ['console', 'sentry'],
             'level': 'DEBUG',
             'propagate': True,
         },
+        'raven': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'sentry.errors': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            'propagate': False,
+        },
     },
+}
+
+RAVEN_CONFIG = {
+    'dsn': os.getenv('SENTRY_DSN', ''),
+    'release': raven.fetch_git_sha(BASE_DIR),
+    'transport': 'raven.transport.requests.RequestsHTTPTransport',
 }
