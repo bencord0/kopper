@@ -9,14 +9,18 @@ Architecture
 1. During CI runs, a Docker Image is pushed to a registry
 2. Registry sends a [webhook][RegistryNotifications] to Kopper
 3. Kopper prepares a release, creates a Deployment object
-4. Kopper updates Services to use the new Deployment.
-
-Users can use terraform to setup registry hooks to kopper.
-The Deployment maybe minimally scaled, scaled the same as a previous Deployment
-or even autoscaled during the release.
-Releases can be rolled back via API or web UI.
+4. Kubernetes updates Pods to use the new Deployment.
 
 [RegistryNotifications]: https://docker.github.io/registry/notifications/
+You can setup a hook with the a stanza like this in the registry config.yml
+
+```
+...
+notifications:
+ endpoints:
+  - name: kopper
+    url: "http://172.17.0.1:8000/event/"
+```
 
 Running the server locally
 ==========================
@@ -28,14 +32,17 @@ Running the server locally
     pipenv install
     pipenv run ./manage.py runserver
 
-Running in docker
-=================
+Running the example
+===================
 
-    docker build -t registry.condi.me/kopper .
+Create the base kubernetes resources
 
-    docker run \
-      -e SECRET_KEY=$(uuidgen) \
-      -e ALLOWED_HOSTS=localhost \
-      -p 80:80
-      registry.condi.me/kopper \
-      piipenv run ./manage.py runserver 0.0.0.0:80
+    kubectl apply -f examples
+
+Push a replacement docker image
+
+    make -C examples/app
+
+Wait for kubernetes to deploy the new Pods.
+
+Done!
