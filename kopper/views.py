@@ -59,14 +59,15 @@ def handle_push_manifest(event):
     foreign_timestamp = maya.when(event["timestamp"])
     timestamp = foreign_timestamp.iso8601()
 
-    log.info(f"New image {host}/{image}:{tag}")
-    Deployment.objects.create(
+    d = Deployment.objects.create(
         host=host,
         image=image,
         tag=tag,
         timestamp=timestamp,
     )
+    log.info(f"New image {d.full_image_name}")
 
+    d.handle_deployment()
 
 EVENT_HANDLERS = {
     'pull': handle_pull,
