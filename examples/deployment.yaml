@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: hello
+  labels:
+    app: web
+    component: hello
+
+spec:
+  selector:
+    matchLabels:
+      app: web
+      component: hello
+  template:
+    metadata:
+      labels:
+        app: web
+        component: hello
+    spec:
+      containers:
+      - name: hello
+        image: nginx
+        ports:
+        - containerPort: 80

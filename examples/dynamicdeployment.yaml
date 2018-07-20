@@ -1,0 +1,19 @@
+---
+apiVersion: condi.me/v1
+kind: DynamicDeployment
+
+metadata:
+  name: hello
+  labels:
+    app: web
+    component: hello
+
+spec:
+  imageSource: registry.local/hello
+  target:
+    matchLabels:
+      app: web
+      component: hello
+    container: hello
+    containerImageTemplate: "{host}/{image}:{tag}"
+
